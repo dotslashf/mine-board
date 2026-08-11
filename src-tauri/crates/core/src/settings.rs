@@ -9,9 +9,11 @@ pub fn load_settings(repo: &Repository) -> Result<AppSettings> {
     let all = repo.all_settings()?;
     let mut map = Map::new();
     for (key, value) in all {
-        if let Ok(v) = serde_json::from_str::<Value>(&value) {
-            unflatten_into(&mut map, &key, v);
-        }
+        // Values are stored as JSON when possible ("1.0", "true"), but plain
+        // strings like "dark" or "47" are stored raw. Accept both: parse as
+        // JSON, falling back to the raw string so nothing is ever dropped.
+        let v = serde_json::from_str::<Value>(&value).unwrap_or_else(|_| Value::String(value));
+        unflatten_into(&mut map, &key, v);
     }
     Ok(serde_json::from_value(Value::Object(map))?)
 }
@@ -123,5 +125,25 @@ mod tests {
         save_settings(&repo, &settings).unwrap();
         assert!(repo.get_setting("audio.microphone_device_id").unwrap().is_none());
         assert!(repo.get_setting("soundboard.default_category_id").unwrap().is_none());
+    }
+
+    #[test]
+    fn numeric_microphone_value_loads() {
+        // Device ids are persisted as plain numeric strings ("47"); the
+        // settings loader must not fail on them (regression: setup panic
+        // "invalid type: integer 47, expected a string").
+        let repo = repo();
+        repo.set_setting("audio.microphone", "47").unwrap();
+        let settings = load_settings(&repo).unwrap();
+        assert_eq!(settings.audio.microphone.as_deref(), Some("47"));
+    }
+
+    #[test]
+    fn plain_string_values_load() {
+        // Non-JSON strings ("dark") must round-trip instead of being dropped.
+        let repo = repo();
+        repo.set_setting("appearance.theme", "dark").unwrap();
+        let settings = load_settings(&repo).unwrap();
+        assert_eq!(settings.appearance.theme, "dark");
     }
 }

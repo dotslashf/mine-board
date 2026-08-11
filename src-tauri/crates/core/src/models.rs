@@ -130,11 +130,26 @@ pub struct AppSettings {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct AudioSettings {
+    /// PipeWire node id or node name, stored as a plain string ("47"). The
+    /// settings store parses it as JSON, so tolerate numeric values too.
+    #[serde(deserialize_with = "deserialize_option_string_or_number")]
     pub microphone: Option<String>,
     pub microphone_volume: f64,
     pub soundboard_volume: f64,
     pub master_volume: f64,
     pub monitor_enabled: bool,
+}
+
+fn deserialize_option_string_or_number<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value = Option::<serde_json::Value>::deserialize(deserializer)?;
+    Ok(value.map(|v| match v {
+        serde_json::Value::String(s) => s,
+        serde_json::Value::Number(n) => n.to_string(),
+        other => other.to_string(),
+    }))
 }
 
 impl Default for AudioSettings {
