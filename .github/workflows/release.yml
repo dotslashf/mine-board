@@ -35,6 +35,21 @@ jobs:
             librsvg2-dev \
             libpipewire-0.3-dev
 
+      # pipewire-sys/libspa-sys 0.8 generate code that references SPA symbols
+      # missing from Ubuntu 22.04's libspa headers (0.3.48). Build against
+      # Ubuntu 24.04's headers (1.0.5) via pkg-config override; linking still
+      # resolves to the system libpipewire/libspa, which exports everything
+      # the engine actually calls.
+      - name: Fetch newer PipeWire/SPA headers (Ubuntu 24.04) for pipewire-sys
+        run: |
+          mkdir -p /tmp/pw-hdrs
+          curl -sL http://archive.ubuntu.com/ubuntu/pool/main/p/pipewire/libspa-0.2-dev_1.0.5-1_amd64.deb -o /tmp/libspa-dev.deb
+          curl -sL http://archive.ubuntu.com/ubuntu/pool/main/p/pipewire/libpipewire-0.3-dev_1.0.5-1_amd64.deb -o /tmp/libpw-dev.deb
+          dpkg -x /tmp/libspa-dev.deb /tmp/pw-hdrs
+          dpkg -x /tmp/libpw-dev.deb /tmp/pw-hdrs
+          sed -i 's|^prefix=.*|prefix=/tmp/pw-hdrs/usr|' /tmp/pw-hdrs/usr/lib/x86_64-linux-gnu/pkgconfig/*.pc
+          echo "PKG_CONFIG_PATH=/tmp/pw-hdrs/usr/lib/x86_64-linux-gnu/pkgconfig:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
+
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -62,3 +77,14 @@ jobs:
             or the .deb for a system install.
           releaseDraft: true
           prerelease: false
+
+      # The whole point of building on 22.04 is glibc 2.35 compatibility;
+      # fail the run if the binary ever needs more.
+      - name: Verify glibc compatibility
+        run: |
+          max=$(objdump -T src-tauri/target/release/atcs-soundboard | grep -o 'GLIBC_[0-9.]*' | sed 's/GLIBC_//' | sort -V | tail -1)
+          echo "binary requires glibc <= ${max}"
+          [ "$(printf '%s\n2.35\n' "$max" | sort -V | tail -1)" = "2.35" ] || {
+            echo "::error::binary requires glibc ${max}, client has 2.35"
+            exit 1
+          }
