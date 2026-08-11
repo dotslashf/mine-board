@@ -46,6 +46,20 @@ bun run build                 # production build
 bun run tauri build           # deb/appimage bundle
 ```
 
+## Releases
+
+Push a version tag and CI builds and uploads both bundles to a GitHub
+Release (draft):
+
+```bash
+git tag v0.1.1
+git push origin v0.1.1
+```
+
+Then publish the draft release on GitHub. The local flow is the same as
+CI (`bun run tauri build`); bundles land in
+`src-tauri/target/release/bundle/{deb,appimage}/`.
+
 ## Notes
 
 - Only **WAV** files are supported today; the file picker filters to `.wav`
