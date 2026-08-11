@@ -1,0 +1,38 @@
+{
+  "name": "@atcs/desktop",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run dev:web & bun run dev:css & wait",
+    "dev:web": "bun ./server.ts",
+    "dev:css": "bunx @tailwindcss/cli -i ./src/styles/app.css -o ./dist/app.css --watch",
+    "build": "bun run build:css && bun build ./index.html --outdir dist --minify",
+    "build:css": "bunx @tailwindcss/cli -i ./src/styles/app.css -o ./dist/app.css",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "^1.170.21",
+    "@tanstack/router-devtools": "^1.167.1",
+    "@tauri-apps/api": "^2.8.0",
+    "@tauri-apps/plugin-dialog": "^2.7.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@happy-dom/global-registrator": "^20.11.2",
+    "@tailwindcss/cli": "^4.1.0",
+    "@tauri-apps/cli": "^2.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.0",
+    "@types/bun": "^1.2.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "happy-dom": "^18.0.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.8.0"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "atcs-soundboard",
+  "private": true,
+  "version": "0.1.0",
+  "description": "ATCS Soundboard - a local-first soundboard for ATC traffic control",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "icons": "bun ./scripts/gen-icons.ts",
+    "tauri": "bun run --filter @atcs/desktop tauri"
+  },
+  "devDependencies": {
+    "turbo": "^2"
+  },
+  "trustedDependencies": [
+    "@parcel/watcher"
+  ]
+}

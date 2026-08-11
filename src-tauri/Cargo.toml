@@ -1,0 +1,31 @@
+[workspace]
+resolver = "2"
+members = ["crates/core", "crates/app"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[workspace.dependencies]
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0.19"
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+rusqlite = { version = "0.37.0", features = ["bundled"] }
+hound = "3.5.1"
+dirs = "6.0.0"
+rtrb = "0.3.4"
+
+# linux-only system bindings (not built in CI/headless hosts)
+pipewire = { version = "0.8", features = ["v0_3_77"] }
+libspa = { version = "0.8" }
+tauri = { version = "2.11.5", features = [] }
+tauri-plugin-dialog = "2.7.2"
+tauri-plugin-global-shortcut = "2.3.2"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

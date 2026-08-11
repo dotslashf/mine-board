@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-panel: oklch(0.208 0.042 265.755);
+  --color-panel-deep: oklch(0.169 0.04 265.755);
+  --color-accent: oklch(0.746 0.16 232.661);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* Keyboard-first: always show a strong focus ring */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Range sliders: thin and clear */
+input[type="range"] {
+  accent-color: var(--color-accent);
+}

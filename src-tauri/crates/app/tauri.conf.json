@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "ATCS Soundboard",
+  "version": "0.1.0",
+  "identifier": "com.atcs.soundboard",
+  "build": {
+    "beforeDevCommand": {
+      "script": "bun run dev",
+      "cwd": "../../../apps/desktop"
+    },
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": {
+      "script": "bun run build",
+      "cwd": "../../../apps/desktop"
+    },
+    "frontendDist": "../../../apps/desktop/dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "main",
+        "title": "ATCS Soundboard",
+        "width": 1100,
+        "height": 760,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["deb", "appimage"],
+    "category": "Utility",
+    "shortDescription": "Virtual microphone soundboard for ATC simulation",
+    "longDescription": "Combines your physical microphone with one-click soundboard clips into a single virtual microphone for ATC applications.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png"
+    ]
+  }
+}
