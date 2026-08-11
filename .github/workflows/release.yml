@@ -10,7 +10,9 @@ permissions:
 
 jobs:
   build-release:
-    runs-on: ubuntu-latest
+    # glibc 2.35 (Ubuntu 22.04): building on a newer image would produce a
+    # binary that older clients cannot run.
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
